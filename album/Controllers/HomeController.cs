@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using album.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using album.Models;
-using Microsoft.AspNetCore.Authorization;
+using System.Diagnostics;
 
 namespace album.Controllers
 {
@@ -24,10 +20,46 @@ namespace album.Controllers
             return View();
         }
 
-        [Authorize]
+        //[Authorize]
         public IActionResult Privacy()
         {
             return View();
+        }
+
+        //[Authorize]
+        public IActionResult Recent()
+        {
+            return View();
+        }
+
+        //[Authorize]
+        public IActionResult Previous()
+        {
+            return View();
+        }
+
+        //[Authorize]
+        public IActionResult More()
+        {
+            return View();
+        }
+
+        [Authorize(Roles = "Admin, Manager")]
+        public IActionResult Admin()
+        {
+            return View();
+        }
+
+        private IActionResult RedirectToLocal(string returnUrl)
+        {
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return RedirectToAction(nameof(HomeController.Index), "Home");
+            }
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

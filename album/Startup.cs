@@ -1,17 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.EntityFrameworkCore;
 using album.Data;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+//using Microsoft.AspNetCore.Middleware;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
+using System.Threading.Tasks;
 
 namespace album
 {
@@ -27,6 +24,7 @@ namespace album
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
@@ -35,18 +33,43 @@ namespace album
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddMvc();
-            services.AddAuthentication();
-                /*.AddGoogle();
-                .AddFacebook();*/
+
+            //services.AddAuthentication()
+            //.AddGoogle();
+            //.AddLinkedin();
+
+            //Encrypt Data and sensitive information
+            /*services.AddDataProtection()
+                .PersistKeysToAzureBlobStorage(new Uri("<bloblUriWithSasToken>"))
+                .ProtectKeysWithAzureKeyVault("<keyIdentifier>", "<clientId>", "<clientSecret>");*/
+            /*.UseCryptographicAlgorithms(
+            {
+            new AuthenticatedEncryptorConfiguration()
+            {
+                EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
+                ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
+
+            });*/
+
+            //enforce SSL
+            /*services.Configure(options =>
+            {
+                options.Filters.Add(new RequireHttpsAttribute());
+            });*/
+
+            /*var options = new RewriteOptions()
+            .AddRedirectToHttps(StatusCodes.Status301MovedPermanently, 63423);
+            AppContext.UseRewriter(options);
+            AppContext.UseMvc();*/
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serv)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
+                //app.UseDatabaseErrorPage();
             }
             else
             {
@@ -56,6 +79,8 @@ namespace album
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            //app.UseMiddleware();
 
             app.UseRouting();
 
@@ -69,6 +94,25 @@ namespace album
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+            //CreateRoles(serviceProvider).Wait();
+        }
+        private async Task CreateRoles(IServiceProvider serviceProvider)
+        {
+            //adding custom roles
+            var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var UserManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            string[] roleNames = { "Admin", "Manager", "Member" };
+            IdentityResult roleResult;
+
+            foreach (var roleName in roleNames)
+            {
+                //creating the roles and sending them to the assigned user
+                var roleExist = await RoleManager.RoleExistsAsync(roleName).ConfigureAwait(true);
+                if (!roleExist)
+                {
+                    roleResult = await RoleManager.CreateAsync(new IdentityRole()).ConfigureAwait(true);
+                }
+            }
         }
     }
 }

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>album</name>
+    </assembly>
+    <members>
+        <member name="M:album.Program.CreateHostBuilder(System.String[])">
+            <summary>
+            Using Kestrel
+            </summary>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="T:album.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:album.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:album.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:album.Properties.Resources.instructions">
+            <summary>
+              Looks up a localized string similar to .
+            </summary>
+        </member>
+    </members>
+</doc>
